@@ -3,10 +3,11 @@ from selenium.webdriver.common.keys import Keys
 import website
 import os
 
+
 class webnavigator():
     '''The webnavigator class will read from a file a series of steps to take when interacting with a website. Each line of the file will contain an element name, type of element identifier,action, and optional input string. Allowable actions for the input string are click,send_keys,find_element_by_id,find_element_by_name,find_element_by_xpath.'''
 
-    def __init__(self,filePath=None,url=None):
+    def __init__(self,filePath,url):
         #setup internal objects/attributes
         self.inFile=filePath
         self.website=website(url)
@@ -15,6 +16,7 @@ class webnavigator():
         #get instructions if file
         with open(self.inFile,'r') as fd:
             self.instructions=fd.readlines()
+
 
     def execute():
         '''This function takes the instructions and executes them one by one'''
@@ -41,9 +43,10 @@ class webnavigator():
                 self.parse(element.get_attribute('outerHTML'),string)
 
     def parse(html,parse_type):
-        self.data+=webparser(html,parse_type)
-        self.data+='\n'
-
+        webparser(html,parse_type)
+        self.data=webparser.text()
+        
+        
 
 
 
