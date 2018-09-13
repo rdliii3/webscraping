@@ -1,0 +1,3 @@
+//a[@href="rankings/index.html"]	xpath	click	
+//a[text()="Quarterbacks"]	xpath	click	
+//
