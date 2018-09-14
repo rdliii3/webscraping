@@ -1,3 +1,4 @@
 //a[@href="rankings/index.html"]	xpath	click	
 //a[text()="Quarterbacks"]	xpath	click	
-//
+//tbody//td/b[text()="Player"]//ancestor::tbody[1]	xpath	parse	print
+
