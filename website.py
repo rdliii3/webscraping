@@ -7,17 +7,17 @@ class website:
 
     def __init__(self,url):
         '''Initializes a website object to the provided url'''
-        self.url=url
+        self.url='https://'+url
+        self.baseDir=os.getenv('HOME')
         self.retrieve()
         self.save()
 
     def save(self):
         '''Save data to a pickle file'''
-
-        if not os.path.exists("/home/rdliii3/.web"):
-            os.mkdir('/home/rdliii3/.web')
-        if os.path.exists("/home/rdliii3/.web/saved.p"):
-            with open("/home/rdliii3/.web/saved.p", 'r+b') as fin:
+        if not os.path.exists(self.baseDir+"/.web"):
+            os.mkdir(self.baseDir+'/.web')
+        if os.path.exists(self.baseDir+'/.web/saved.p'):
+            with open(self.baseDir+'/.web/saved.p', 'r+b') as fin:
                 data = pickle.load(fin)
                 data[self.url] = [base64.b64encode(bytes(self.__username,'ascii')),base64.b64encode(bytes(self.__password,'ascii'))]
                 fin.seek(0)
@@ -25,7 +25,7 @@ class website:
                 pickle.dump(data,fin)
 
         else:
-            with open("/home/rdliii3/.web/saved.p", 'wb') as fin:
+            with open(self.baseDir+'/.web/saved.p', 'wb') as fin:
                 data={}
                 data[self.url] = [base64.b64encode(bytes(self.__username,'ascii')),base64.b64encode(bytes(self.__password,'ascii'))]
                 pickle.dump( data, fin )
@@ -35,10 +35,10 @@ class website:
         '''Retrieve data associated with the website if it exists.
         Otherwise prompt the user for the data.'''
         
-        if os.path.exists("/home/rdliii3/.web/saved.p"):
-            with open("/home/rdliii3/.web/saved.p", 'rb') as fin:
+        if os.path.exists(self.baseDir+'/.web/saved.p'):
+            with open(self.baseDir+'/.web/saved.p', 'rb') as fin:
                 data=pickle.load(fin)
-                if data[self.url]:
+                if self.url in data:
                     self.__username = str(base64.b64decode(data[self.url][0]),'ascii')
                     self.__password = str(base64.b64decode(data[self.url][1]),'ascii')
                 else:

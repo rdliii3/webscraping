@@ -1,7 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import website
-import os
+from website import website
+from webparser import webparser
+import os,sys
 
 
 class webnavigator():
@@ -11,18 +12,18 @@ class webnavigator():
         #setup internal objects/attributes
         self.inFile=filePath
         self.website=website(url)
-        self.driver=webdriver.Firefox()
+        self.driver=webdriver.Firefox(executable_path=r'/home/rlangley/geckodriver')
         self.instructions=[]
-        #get instructions if file
+        #get instructions from file
         with open(self.inFile,'r') as fd:
             self.instructions=fd.readlines()
 
 
-    def execute():
+    def execute(self):
         '''This function takes the instructions and executes them one by one'''
-        self.driver.get(website.url)
+        self.driver.get(self.website.url)
         for line in self.instructions:
-            element_id,element_type,action,string=line.split(',')
+            element_id,element_type,action,string=line.split('\t')
             if element_type=='id':
                 element=self.driver.find_element_by_id(element_id)
             elif element_type=='name':
@@ -33,7 +34,7 @@ class webnavigator():
             if action=='click':
                 element.click()
             elif action=='send_keys':
-                if string='username':
+                if string=='username':
                     element.send_keys(website.username())
                 elif string=='password':
                     element.send_keys(website.password())
@@ -42,12 +43,14 @@ class webnavigator():
             elif action=='parse':
                 self.parse(element.get_attribute('outerHTML'),string)
 
-    def parse(html,parse_type):
+    def parse(self,html,parse_type):
         webparser(html,parse_type)
         self.data=webparser.text()
         
         
-
+if __name__=='__main__':
+    navigator=webnavigator('demo.txt','www.fftoday.com')
+    navigator.execute()
 
 
                 
