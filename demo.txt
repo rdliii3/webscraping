@@ -1,4 +1,9 @@
-//a[@href="rankings/index.html"]	xpath	click	
-//a[text()="Quarterbacks"]	xpath	click	
-//tbody//td/b[text()="Player"]//ancestor::tbody[1]	xpath	parse	print
+#This file contains a short set of instructions for navigating to a website
+@www.fftoday.com
+//a[@href="rankings/index.html"] xpath click	
+//a[text()="Quarterbacks"] xpath click	
+//tbody//td/b[text()="Player"]//ancestor::tbody[1] xpath parse print
+
+
+
 
