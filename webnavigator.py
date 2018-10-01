@@ -11,10 +11,24 @@ class webnavigator():
 
     def __init__(self,filePath):
         #setup internal objects/attributes
+        self.config()
         self.instructions=navinput(filePath)
         self.instructions.setup()
         self.website=website(self.instructions.website)
-        self.driver=webdriver.Firefox(executable_path=r'/home/rlangley/geckodriver')#TODO get geckodriver from a config file
+        self.driver=webdriver.Firefox(executable_path=self.config_params['driver'])
+
+    
+    def config(self):
+        self.config_params={}
+        with open(os.getenv('HOME')+'/.web/.config','r') as config:
+            #build configuration dictionary
+            for line in config.readlines():
+                if line[0] == '': #skip empty lines
+                    continue
+                if line[0] == '#': #skip comment lines
+                    continue
+                self.config_params[ line.split('=')[0].strip() ]= line.split('=')[1].strip()
+
 
     def execute(self):
         '''This function takes the instructions and executes them one by one'''
