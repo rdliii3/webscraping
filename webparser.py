@@ -17,7 +17,18 @@ class webparser():
         print(self.document.prettify())
 
     def parseTable(self):
-        pass
+        data=[]
+        #navigate the table row by row and save all strings to data list
+        table=self.document.tbody
+        rows=table.find_all('tr')
+        for row in rows:
+            cols=row.find_all('td')
+            csv_row=[]
+            for col in cols:
+                for string in col.stripped_strings:
+                    csv_row.append(string)
+            data.append(csv_row)
+        return data
         
     
 

@@ -44,15 +44,26 @@ class webnavigator():
                 self.parse(element.get_attribute('outerHTML'),string)
             
             instruction=self.instructions.next()
+        self.driver.close()
 
     def parse(self,html,parse_type):
-        webparser(html,parse_type)
-        #self.data=webparser.text()
+        parser=webparser(html,parse_type)
+        self.dataList=parser.parse()
+
+    def data(self):
+        '''This function provides access to the data obtained from scraping
+        Input - None
+        Return - list of strings
+        Side effect - None
+        '''
+        return self.dataList
+
         
         
 if __name__=='__main__':
     navigator=webnavigator('demo.txt')
     navigator.execute()
+    print(navigator.data())
 
 
                 
