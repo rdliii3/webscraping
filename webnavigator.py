@@ -16,7 +16,8 @@ class webnavigator():
         self.instructions.setup()
         self.website=website(self.instructions.website)
         self.driver=webdriver.Firefox(executable_path=self.config_params['driver'])
-
+        self.driver.get(self.website.url)
+        self.dataList=[]
     
     def config(self):
         self.config_params={}
@@ -30,12 +31,13 @@ class webnavigator():
                 self.config_params[ line.split('=')[0].strip() ]= line.split('=')[1].strip()
 
 
-    def execute(self):
-        '''This function takes the instructions and executes them one by one'''
-        self.driver.get(self.website.url)
+    def execute(self,instruction):
+        '''This function takes an instruction and executes it
+        Input - An instruction (list of 4 items)
+        Return - True for success, False for error
+        '''
+        try:
 
-        instruction=self.instructions.current()
-        while instruction:
             element_id,element_type,action,string=instruction
 
             if element_type=='id':
@@ -56,9 +58,20 @@ class webnavigator():
                     element.send_keys(string)
             elif action=='parse':
                 self.parse(element.get_attribute('outerHTML'),string)
+            return True
+        except:
+            print("Could not execute instruction:")
+            print(instruction)
+            return False
             
+
+    def executeAll(self):
+        '''Function to execute all instructions in a instruction set'''
+        instruction=self.instructions.current()
+        while instruction:
+            if not self.execute(instruction):
+                break
             instruction=self.instructions.next()
-        self.driver.close()
 
     def parse(self,html,parse_type):
         parser=webparser(html,parse_type)
@@ -72,12 +85,16 @@ class webnavigator():
         '''
         return self.dataList
 
-        
+    def close(self):
+        self.driver.close()
+
         
 if __name__=='__main__':
     navigator=webnavigator('demo.txt')
-    navigator.execute()
-    print(navigator.data())
+    navigator.executeAll()
+    for item in navigator.data():
+        print(','.join(item))
+    navigator.close()
 
 
                 
