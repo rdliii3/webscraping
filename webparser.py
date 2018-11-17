@@ -8,7 +8,6 @@ class webparser():
         self.functions={'print':self.printHtml,
                         'table':self.parseTable}
         self.setup()
-        self.parse()
 
     def setup(self):
         self.parse=self.functions[self.parse_type]

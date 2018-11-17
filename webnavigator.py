@@ -40,6 +40,7 @@ class webnavigator():
 
             element_id,element_type,action,string=instruction
 
+            #get element
             if element_type=='id':
                 element=self.driver.find_element_by_id(element_id)
             elif element_type=='name':
@@ -58,6 +59,9 @@ class webnavigator():
                     element.send_keys(string)
             elif action=='parse':
                 self.parse(element.get_attribute('outerHTML'),string)
+            elif action=='output':
+                self.output(element_id,element_type,string)
+                self.flush()
             return True
         except:
             print("Could not execute instruction:")
@@ -84,6 +88,17 @@ class webnavigator():
         Side effect - None
         '''
         return self.dataList
+
+    def flush(self):
+        self.dataList.clear()
+
+    def output(self,file,type,overwrite):
+        with open(file,'rw') as fout:
+            if overwrite == 'overwrite':
+                fout.seek(0)
+                fout.truncate()
+            
+            
 
     def close(self):
         self.driver.close()
