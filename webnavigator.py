@@ -20,7 +20,11 @@ class webnavigator():
         self.dataList=[]
     
     def config(self):
-        self.config_params={}
+        #default configuration
+        self.config_params={"driver_type":"Firefox", "driver":os.getenv('HOME')+'/geckodriver'} 
+        # Read configuration from file if possible
+        if not os.path.isfile(os.getenv('HOME')+'/.web/.config'):
+            return
         with open(os.getenv('HOME')+'/.web/.config','r') as config:
             #build configuration dictionary
             for line in config.readlines():
