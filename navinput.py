@@ -71,7 +71,9 @@ class navinput():
             l.append("")
             return l
         if len(l) < 3:
-            return 'Error: Not enough fields on line'
+            # Handle output options
+            if l[0].lower() == 'output' or l[0].lower() == 'flush':
+                return ["","",l[0].lower(),""]
         if len(l) > 4:
             return 'Error: Too many fields on line'
         return 'Error: Unknown error'

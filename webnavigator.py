@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from website import website
 from webparser import webparser
 from navinput import navinput
+from output import Output
 import os,sys
 
 
@@ -21,9 +22,15 @@ class webnavigator():
         self.driver=webdriver.Firefox(executable_path=self.config_params['driver'])
         self.driver.get(self.website.url)
         # Initialize output object
-
+        self.output=None
         # Initialize data objects
         self.dataList=[]
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.close()
     
     def config(self):
         #default configuration
@@ -70,7 +77,8 @@ class webnavigator():
             elif action=='parse':
                 self.parse(element.get_attribute('outerHTML'),string)
             elif action=='output':
-                self.output(element_id,element_type,string)
+                self.write()
+            elif action=='flush':
                 self.flush()
             return True
         except:
@@ -95,7 +103,7 @@ class webnavigator():
         Side effect: Fill dataList with parsed html
         '''
         parser=webparser(html,parse_type)
-        self.dataList=parser.parse()
+        self.dataList += parser.parse()
 
     def data(self):
         '''This function provides access to the data obtained from scraping
@@ -108,22 +116,28 @@ class webnavigator():
     def flush(self):
         self.dataList.clear()
 
-    def output(self,file,type,overwrite):
-        with open(file,'rw') as fout:
-            if overwrite == 'overwrite':
-                fout.seek(0)
-                fout.truncate()
+    def setOutput(self, outputObject):
+        if isinstance(outputObject, Output):
+            self.output=outputObject
+
+    def write(self):
+        if self.output:
+            self.output.write(self.dataList)
+        else:
+            print(self.dataList)
             
     def close(self):
         self.driver.close()
 
         
 if __name__=='__main__':
-    navigator=webnavigator('demo.txt')
-    navigator.executeAll()
-    for item in navigator.data():
-        print(','.join(item))
-    navigator.close()
+    with webnavigator('demo.txt') as navigator:
+        navigator.setOutput(Output('test.txt','csv'))
+        navigator.executeAll()
+
+
+
+
 
 
                 
