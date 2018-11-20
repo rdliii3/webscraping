@@ -137,10 +137,10 @@ if __name__=='__main__':
     if len(sys.argv) > 1:
         instructionFile = sys.argv[1]
     if len(sys.argv) > 2:
-        outputType = sys.argv[2].split('.')[2]
+        outputType = sys.argv[2].split('.')[1]
         OutputObj = Output(sys.argv[2], outputType)
 
-    with webnavigator('demo.txt') as navigator:
+    with webnavigator(instructionFile) as navigator:
         navigator.setOutput(OutputObj)
         navigator.executeAll()
 

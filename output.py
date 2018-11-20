@@ -19,7 +19,7 @@ class Output():
         # Output
         return out_string
         
-    def txt(self, data)
+    def txt(self, data):
         # Create txt string for output
         intermediate_data=[]
         out_string = '\n### ' + str(datetime.datetime.now()) + ' ###\n'
