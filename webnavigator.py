@@ -71,9 +71,9 @@ class webnavigator():
                 element.click()
             elif action=='send_keys':
                 if string=='username':
-                    element.send_keys(website.username())
+                    element.send_keys(self.website.username())
                 elif string=='password':
-                    element.send_keys(website.password())
+                    element.send_keys(self.website.password())
                 else:
                     element.send_keys(string)
             elif action=='parse':
@@ -83,15 +83,15 @@ class webnavigator():
             elif action=='flush':
                 self.flush()
             return True
-        except:
-            self.instructionError()
+        except Exception as e:
+            self.instructionError(e)
             return False
             
     def executeByStep(self):
         '''Function to control execution by step from the user'''
         instruction = self.instructions.current()
+        self.url_stack.append(self.driver.current_url)
         while instruction:
-            self.url_stack.append(self.driver.current_url)
             user_response = input("Press N for next, B for back, C for custom, P for print: ")
             if user_response.isdigit():
                 instruction = self.instructions.byIndex(int(user_response))
@@ -100,9 +100,10 @@ class webnavigator():
                 print(instruction)
                 if self.execute(instruction):
                     instruction=self.instructions.next()
+                    self.url_stack.append(self.driver.current_url)
             elif user_response.lower() == 'b':
-                self.url_stack.removeAll(self.driver.current_url)
-                self.driver.get(self.url_stack.pop())
+                if self.url_stack:
+                    self.driver.get(self.url_stack.pop())
                 print(self.url_stack)
                 instruction=self.instructions.previous()                
             elif user_response.lower() == 'c':
@@ -160,9 +161,10 @@ class webnavigator():
     def close(self):
         self.driver.close()
     
-    def instructionError(self):
+    def instructionError(self, exception):
         print("Could not execute instruction:")
         print(self.instructions.current())
+        print(repr(exception))
 
 
         
