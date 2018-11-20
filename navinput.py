@@ -127,6 +127,14 @@ class navinput():
         print("Number of errors: " + str(self.parse_errors))
         if self.parse_errors > 0:
             print("Errors in parsing; Instructions probably not complete for web navigation.")
+    
+    def print(self):
+        for i in range(len(self.instructions)):
+            if i == self.current_idx:
+                print(' '.join(self.instructions[i]) + '***')
+            else:
+                print(' '.join(self.instructions[i]))
+
 
     def setDelimiter(self,delimiter):
         self.delimiter=delimeter

@@ -82,10 +82,34 @@ class webnavigator():
                 self.flush()
             return True
         except:
-            print("Could not execute instruction:")
-            print(instruction)
+            self.instructionError()
             return False
             
+    def executeByStep(self):
+        '''Function to control execution by step from the user'''
+        url_stack=[]
+        instruction = self.instructions.current()
+        while instruction:
+            url_stack.append(self.driver.current_url)
+            user_response = input("Press N for next, B for back, C for custom, P for print: ")
+            if user_response.lower() == 'n':
+                print(instruction)
+                try:
+                    self.execute(instruction)
+                    instruction=self.instructions.next()
+                except:
+                    pass
+            if user_response.lower() == 'b':
+                self.driver.get(url_stack.pop())
+                instruction=self.instructions.previous()                
+            if user_response.lower() == 'c':
+                print("Currently not implemented")
+            if user_response.lower() == 'p':
+                self.instructions.print()
+            if user_response.lower() == 'q':
+                return
+                
+
 
     def executeAll(self):
         '''Function to execute all instructions in an instruction set'''
@@ -128,12 +152,24 @@ class webnavigator():
             
     def close(self):
         self.driver.close()
+    
+    def instructionError(self):
+        print("Could not execute instruction:")
+        print(self.instructions.current())
+
 
         
 if __name__=='__main__':
+    # default arguments
     instructionFile = 'demo.txt'
     OutputObj = None
     outputType = None
+    execute = 'all'
+
+    # get user arguments
+    if '-s' in sys.argv:
+        sys.argv.remove('-s')
+        execute = 'step'
     if len(sys.argv) > 1:
         instructionFile = sys.argv[1]
     if len(sys.argv) > 2:
@@ -142,7 +178,11 @@ if __name__=='__main__':
 
     with webnavigator(instructionFile) as navigator:
         navigator.setOutput(OutputObj)
-        navigator.executeAll()
+        if execute == 'step':
+            navigator.executeByStep()
+        else:
+            navigator.executeAll()
+            
 
 
 
