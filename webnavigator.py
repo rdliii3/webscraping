@@ -10,13 +10,19 @@ class webnavigator():
     '''The webnavigator class will read from a file a series of steps to take when interacting with a website. Each line of the file will contain an element identifier, type of element identifier,action, and optional action control string. Allowable actions for the input string are click,send_keys,find_element_by_id,find_element_by_name,find_element_by_xpath.'''
 
     def __init__(self,filePath):
-        #setup internal objects/attributes
+        # Setup program variables
         self.config()
+        # Initialize instruction object
         self.instructions=navinput(filePath)
         self.instructions.setup()
+        # Initialize website object
         self.website=website(self.instructions.website)
+        # Initialize webdriver
         self.driver=webdriver.Firefox(executable_path=self.config_params['driver'])
         self.driver.get(self.website.url)
+        # Initialize output object
+
+        # Initialize data objects
         self.dataList=[]
     
     def config(self):
@@ -74,7 +80,7 @@ class webnavigator():
             
 
     def executeAll(self):
-        '''Function to execute all instructions in a instruction set'''
+        '''Function to execute all instructions in an instruction set'''
         instruction=self.instructions.current()
         while instruction:
             if not self.execute(instruction):
@@ -82,6 +88,12 @@ class webnavigator():
             instruction=self.instructions.next()
 
     def parse(self,html,parse_type):
+        '''Function to parse html data in a user defined way
+        Input: html - html to be parsed
+               parse_type - parameter that controls how the html will be parsed
+        Return: N/A
+        Side effect: Fill dataList with parsed html
+        '''
         parser=webparser(html,parse_type)
         self.dataList=parser.parse()
 
@@ -102,8 +114,6 @@ class webnavigator():
                 fout.seek(0)
                 fout.truncate()
             
-            
-
     def close(self):
         self.driver.close()
 
