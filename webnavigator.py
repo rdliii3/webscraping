@@ -25,6 +25,8 @@ class webnavigator():
         self.output = None
         # Initialize data objects
         self.dataList = []
+        self.url_stack=[] # created for step back ability
+
 
     def __enter__(self):
         return self
@@ -87,27 +89,32 @@ class webnavigator():
             
     def executeByStep(self):
         '''Function to control execution by step from the user'''
-        url_stack=[]
         instruction = self.instructions.current()
         while instruction:
-            url_stack.append(self.driver.current_url)
+            self.url_stack.append(self.driver.current_url)
             user_response = input("Press N for next, B for back, C for custom, P for print: ")
+            if user_response.isdigit():
+                instruction = self.instructions.byIndex(int(user_response))
+                user_response = 'n'
             if user_response.lower() == 'n':
                 print(instruction)
-                try:
-                    self.execute(instruction)
+                if self.execute(instruction):
                     instruction=self.instructions.next()
-                except:
-                    pass
-            if user_response.lower() == 'b':
-                self.driver.get(url_stack.pop())
+            elif user_response.lower() == 'b':
+                self.url_stack.removeAll(self.driver.current_url)
+                self.driver.get(self.url_stack.pop())
+                print(self.url_stack)
                 instruction=self.instructions.previous()                
-            if user_response.lower() == 'c':
-                print("Currently not implemented")
-            if user_response.lower() == 'p':
+            elif user_response.lower() == 'c':
+                custom = input("Enter new instruction to insert: ")
+                self.instructions.insert(custom)
+            elif user_response.lower() == 'p':
                 self.instructions.print()
-            if user_response.lower() == 'q':
+            elif user_response.lower() == 'q':
                 return
+
+        self.instructions.last()
+        self.executeByStep() # Loop back into execution steps so user can step back from last instruction if needed
                 
 
 

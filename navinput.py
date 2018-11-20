@@ -46,11 +46,7 @@ class navinput():
             if line[0] == '@': #website url
                 self.processWebsite(line)
             else:
-                result=self.processLine(line)
-                if isinstance(result,list):
-                    self.instructions.append(result)
-                else:
-                    self.reportError(result,rawList.index(item)+1,line)
+                self.addInstruction(self.processLine(line))
         
 
     def processLine(self,line):
@@ -77,6 +73,12 @@ class navinput():
         if len(l) > 4:
             return 'Error: Too many fields on line'
         return 'Error: Unknown error'
+
+    def addInstruction(self, instruction):
+        if isinstance(instruction,list):
+            self.instructions.append(instruction)
+        else:
+            self.reportError(result,rawList.index(item)+1,line)
 
     def processWebsite(self,line):
         '''Function to process a website line from instructions file.
@@ -106,6 +108,20 @@ class navinput():
         self.current_idx = 0
         return self.current()
 
+    def insert(self, line):
+        new = self.processLine(line)
+        if isinstance(new,list):
+            self.instructions.insert(self.current_idx + 1, new)
+        else:
+            print("Instruction format error. Could not insert instruction.")
+
+    def setCurrent(self, index):
+        if index >=0 and index < len(self.instructions):
+            self.current_idx = index
+    
+    def byIndex(self, index):
+        self.setCurrent(index)
+        return self.current()
 
     def last(self):
         self.current_idx = len(self.instructions) - 1
@@ -129,11 +145,13 @@ class navinput():
             print("Errors in parsing; Instructions probably not complete for web navigation.")
     
     def print(self):
+        print('')
         for i in range(len(self.instructions)):
             if i == self.current_idx:
-                print(' '.join(self.instructions[i]) + '***')
+                print(str(i) + ': ' + ' '.join(self.instructions[i]) + '***')
             else:
-                print(' '.join(self.instructions[i]))
+                print(str(i) + ': ' + ' '.join(self.instructions[i]))
+        print('')
 
 
     def setDelimiter(self,delimiter):
@@ -143,4 +161,4 @@ class navinput():
 if __name__=='__main__':
     instructions=navinput('demo.txt')
     instructions.setup()
-    print(instructions.all())
+    instuctions.print()
