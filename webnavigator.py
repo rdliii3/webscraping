@@ -14,17 +14,17 @@ class webnavigator():
         # Setup program variables
         self.config()
         # Initialize instruction object
-        self.instructions=navinput(filePath)
+        self.instructions = navinput(filePath)
         self.instructions.setup()
         # Initialize website object
-        self.website=website(self.instructions.website)
+        self.website = website(self.instructions.website)
         # Initialize webdriver
-        self.driver=webdriver.Firefox(executable_path=self.config_params['driver'])
+        self.driver = webdriver.Firefox(executable_path = self.config_params['driver'])
         self.driver.get(self.website.url)
         # Initialize output object
-        self.output=None
+        self.output = None
         # Initialize data objects
-        self.dataList=[]
+        self.dataList = []
 
     def __enter__(self):
         return self
@@ -34,7 +34,7 @@ class webnavigator():
     
     def config(self):
         #default configuration
-        self.config_params={"driver_type":"Firefox", "driver":os.getenv('HOME')+'/geckodriver'} 
+        self.config_params = {"driver_type":"Firefox", "driver":os.getenv('HOME')+'/geckodriver'} 
         # Read configuration from file if possible
         if not os.path.isfile(os.getenv('HOME')+'/.web/.config'):
             return
@@ -55,15 +55,15 @@ class webnavigator():
         '''
         try:
 
-            element_id,element_type,action,string=instruction
+            element_id,element_type,action,string = instruction
 
             #get element
             if element_type=='id':
-                element=self.driver.find_element_by_id(element_id)
+                element = self.driver.find_element_by_id(element_id)
             elif element_type=='name':
-                element=self.driver.find_element_by_name(element_id)
+                element = self.driver.find_element_by_name(element_id)
             elif element_type=='xpath':
-                element=self.driver.find_element_by_xpath(element_id)
+                element = self.driver.find_element_by_xpath(element_id)
             #perform action
             if action=='click':
                 element.click()
@@ -89,11 +89,11 @@ class webnavigator():
 
     def executeAll(self):
         '''Function to execute all instructions in an instruction set'''
-        instruction=self.instructions.current()
+        instruction = self.instructions.current()
         while instruction:
             if not self.execute(instruction):
                 break
-            instruction=self.instructions.next()
+            instruction = self.instructions.next()
 
     def parse(self,html,parse_type):
         '''Function to parse html data in a user defined way
@@ -102,7 +102,7 @@ class webnavigator():
         Return: N/A
         Side effect: Fill dataList with parsed html
         '''
-        parser=webparser(html,parse_type)
+        parser = webparser(html,parse_type)
         self.dataList += parser.parse()
 
     def data(self):
@@ -118,7 +118,7 @@ class webnavigator():
 
     def setOutput(self, outputObject):
         if isinstance(outputObject, Output):
-            self.output=outputObject
+            self.output = outputObject
 
     def write(self):
         if self.output:
@@ -131,8 +131,17 @@ class webnavigator():
 
         
 if __name__=='__main__':
+    instructionFile = 'demo.txt'
+    OutputObj = None
+    outputType = None
+    if len(sys.argv) > 1:
+        instructionFile = sys.argv[1]
+    if len(sys.argv) > 2:
+        outputType = sys.argv[2].split('.')[2]
+        OutputObj = Output(sys.argv[2], outputType)
+
     with webnavigator('demo.txt') as navigator:
-        navigator.setOutput(Output('test.txt','csv'))
+        navigator.setOutput(OutputObj)
         navigator.executeAll()
 
 

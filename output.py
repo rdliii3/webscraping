@@ -18,10 +18,25 @@ class Output():
         out_string += '\n'.join(intermediate_data)
         # Output
         return out_string
+        
+    def txt(self, data)
+        # Create txt string for output
+        intermediate_data=[]
+        out_string = '\n### ' + str(datetime.datetime.now()) + ' ###\n'
+        for line in data:
+            if isinstance(line, list):
+                intermediate_data.append(' '.join(line))
+        out_string += '\n'.join(intermediate_data)
+        # Output
+        return out_string
+
 
     def write(self, data):
-        if self.fout and self.type == 'csv':
-            self.fout.write(self.csv(data))
+        if self.fout:
+            if self.type == 'csv':
+                self.fout.write(self.csv(data))
+            if self.type == 'txt':
+                self.fout.write(self.txt(data))
         else:
             print(self.csv(data))
 
