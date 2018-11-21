@@ -45,7 +45,11 @@ class navinput():
             if line[0] == '@': #website url
                 self.processWebsite(line)
             else:
-                self.addInstruction(self.processLine(line))
+                result = self.processLine(line)
+                if isinstance(result,list):
+                    self.instructions.append(result)
+                else:
+                    self.reportError(result, rawList.index(item)+1, line)
         
 
     def processLine(self,line):
@@ -54,7 +58,16 @@ class navinput():
         Output - a list of length 4 if the input string is a valid instruction otherwise a
                  a string describing the error
         '''
-        l = line.split(self.delimeter)
+        l = []
+
+        # complicated xpaths end in $; split for xpath first
+        if '$' in line:
+            tmp=line.split('$')
+            l.append(tmp[0])
+            tmp[1] = tmp[1].strip()
+            l = l + tmp[1].split(self.delimeter)
+        else:
+            l = line.split(self.delimeter)
         #clean input strings
         for i in range(len(l)):
             l[i] = l[i].strip()
@@ -75,12 +88,6 @@ class navinput():
         if len(l) > 4:
             return 'Error: Too many fields on line'
         return 'Error: Unknown error'
-
-    def addInstruction(self, instruction):
-        if isinstance(instruction,list):
-            self.instructions.append(instruction)
-        else:
-            self.reportError(result,rawList.index(item)+1,line)
 
     def processWebsite(self,line):
         '''Function to process a website line from instructions file.
@@ -114,7 +121,7 @@ class navinput():
         new = self.processLine(line)
         idx=index if index is not None else (self.current_idx + 1)
         if isinstance(new,list):
-            self.instructions.insert(index, new)
+            self.instructions.insert(idx, new)
         else:
             print("Instruction format error. Could not insert instruction.")
 
@@ -166,4 +173,4 @@ class navinput():
 if __name__=='__main__':
     instructions=navinput('demo.txt')
     instructions.setup()
-    instuctions.print()
+    instructions.print()
