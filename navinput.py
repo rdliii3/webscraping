@@ -42,7 +42,6 @@ class navinput():
                 continue
             if line[0] == '#': #skip comment lines
                 continue
-
             if line[0] == '@': #website url
                 self.processWebsite(line)
             else:
@@ -66,8 +65,11 @@ class navinput():
         if len(l) == 3: #add empty fourth field
             l.append("")
             return l
-        if len(l) < 3:
-            # Handle output options
+        if len(l) == 2:
+            if l[0].lower() == 'output':
+                return ["","",l[0].lower(),l[1]]
+        if len(l) == 1:
+            # Output & flush only acceptable optoins
             if l[0].lower() == 'output' or l[0].lower() == 'flush':
                 return ["","",l[0].lower(),""]
         if len(l) > 4:

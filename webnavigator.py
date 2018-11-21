@@ -85,7 +85,7 @@ class webnavigator():
             elif action=='parse':
                 self.parse(element.get_attribute('outerHTML'),string)
             elif action=='output':
-                self.write()
+                self.write(string)
             elif action=='flush':
                 self.flush()
             return True
@@ -187,12 +187,20 @@ class webnavigator():
     def setOutput(self, outputObject):
         if isinstance(outputObject, Output):
             self.output = outputObject
+        else:
+            self.output = None
 
-    def write(self):
-        if self.output:
+    def write(self, outputFile=None):
+        if outputFile:
+            # new output file given
+            if self.output:
+                self.output.close()
+            self.output = Output(outputFile, outputFile.split('.')[1])
             self.output.write(self.dataList)
         else:
-            print(self.dataList)
+            # Single file (or screen) output case
+            self.output.write(self.dataList)
+        
             
     def close(self):
         self.driver.close()

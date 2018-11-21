@@ -2,11 +2,17 @@ import os, sys
 import datetime
 
 class Output():
-    '''The output class controls the output options data gathering classes.'''
+    '''The output class controls the output for data gathering classes.'''
 
     def __init__(self, file=None, type="screen"):
         self.setOutputType(type)
         self.setFile(file)
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, type, value, traceback):
+        self.close()
 
     def csv(self, data):
         # Create csv string for output
@@ -49,7 +55,7 @@ class Output():
             self.fout=open(self.file,'w')
         else:
             self.fout=None
-            print("Could not open output file. Default output will be to screen\n")
+            print("Could not open output file or not file given. Default output will be to screen\n")
     
     def outputType(self):
         return self.type
@@ -57,6 +63,13 @@ class Output():
     def setOutputType(self,type):
         self.type=type
 
+    def close(self):
+        if self.fout:
+            self.fout.close()
+
+    def __del__(self):
+        if self.fout:
+            self.close()
 
 if __name__=='__main__':
     test=Output()
