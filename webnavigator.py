@@ -10,7 +10,7 @@ import os,sys
 class webnavigator():
     '''The webnavigator class will read from a file a series of steps to take when interacting with a website. Each line of the file will contain an element identifier, type of element identifier,action, and optional action control string. Allowable actions for the input string are click,send_keys,find_element_by_id,find_element_by_name,find_element_by_xpath.'''
 
-    def __init__(self,filePath):
+    def __init__(self,filePath, log=False):
         # Setup program variables
         self.config()
         # Initialize instruction object
@@ -26,7 +26,8 @@ class webnavigator():
         # Initialize data objects
         self.dataList = []
         self.url_stack=[] # created for step back ability
-
+        # Set object attributes
+        self.log=log
 
     def __enter__(self):
         return self
@@ -55,6 +56,9 @@ class webnavigator():
         Input - An instruction (list of 4 items)
         Return - True for success, False for error
         '''
+        if self.log:
+            print('Executing: ' + ' '.join(instruction))
+        
         try:
 
             element_id,element_type,action,string = instruction
@@ -94,12 +98,11 @@ class webnavigator():
         instruction = self.instructions.current()
         self.url_stack.append(self.driver.current_url)
         while instruction:
-            user_response = input("Press N for next, B for back, C for custom, P for print: ")
+            user_response = input("Press N for next, B for back, I for insert, P for print: ")
             if user_response.isdigit():
                 instruction = self.instructions.byIndex(int(user_response))
                 user_response = 'n'
             if user_response.lower() == 'n':
-                print(instruction)
                 if self.execute(instruction):
                     instruction=self.instructions.next()
                     self.url_stack.append(self.driver.current_url)
@@ -108,16 +111,18 @@ class webnavigator():
                     self.driver.get(self.url_stack.pop())
                 print(self.url_stack)
                 instruction=self.instructions.previous()                
-            elif user_response.lower() == 'c':
+            elif user_response.lower() == 'i':
                 custom = input("Enter new instruction to insert: ")
                 self.instructions.insert(custom)
             elif user_response.lower() == 'p':
                 self.instructions.print()
+            elif user_response.lower() == 'c':
+                return self.executeAll()
             elif user_response.lower() == 'q':
                 return
 
         self.instructions.last()
-        self.executeByStep() # Loop back into execution steps so user can step back from last instruction if needed
+        return self.executeByStep() # Loop back into execution steps so user can step back from last instruction if needed
                 
 
 
@@ -126,7 +131,11 @@ class webnavigator():
         instruction = self.instructions.current()
         while instruction:
             if not self.execute(instruction):
-                break
+                user = input("Continue in step-by-step mode?(y/n): ")
+                if user.lower() == 'y':
+                    self.executeByStep()
+                else:
+                    break
             instruction = self.instructions.next()
 
     def parse(self,html,parse_type):
@@ -176,18 +185,23 @@ if __name__=='__main__':
     OutputObj = None
     outputType = None
     execute = 'all'
+    log = False
 
-    # get user arguments
+    # parse user arguments
     if '-s' in sys.argv:
         sys.argv.remove('-s')
         execute = 'step'
+    if '-l' in sys.argv:
+        sys.argv.remove('-l')
+        log=True
     if len(sys.argv) > 1:
         instructionFile = sys.argv[1]
     if len(sys.argv) > 2:
         outputType = sys.argv[2].split('.')[1]
         OutputObj = Output(sys.argv[2], outputType)
 
-    with webnavigator(instructionFile) as navigator:
+    # Run
+    with webnavigator(instructionFile, log) as navigator:
         navigator.setOutput(OutputObj)
         if execute == 'step':
             navigator.executeByStep()

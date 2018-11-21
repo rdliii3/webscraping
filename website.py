@@ -55,6 +55,7 @@ class website:
     def prompt(self):
         self.ask_username()
         self.ask_password()
+        self.save()
         
     def username(self):
         return self.__username

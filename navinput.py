@@ -108,10 +108,11 @@ class navinput():
         self.current_idx = 0
         return self.current()
 
-    def insert(self, line):
+    def insert(self, line, index=None):
         new = self.processLine(line)
+        idx=index if index is not None else (self.current_idx + 1)
         if isinstance(new,list):
-            self.instructions.insert(self.current_idx + 1, new)
+            self.instructions.insert(index, new)
         else:
             print("Instruction format error. Could not insert instruction.")
 
@@ -156,6 +157,8 @@ class navinput():
 
     def setDelimiter(self,delimiter):
         self.delimiter=delimeter
+
+    
         
 
 if __name__=='__main__':
