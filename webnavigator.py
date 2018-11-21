@@ -98,7 +98,7 @@ class webnavigator():
         instruction = self.instructions.current()
         self.url_stack.append(self.driver.current_url)
         while instruction:
-            user_response = input("Press N for next, B for back, I for insert, P for print: ")
+            user_response = input("Enter step option(n=next, b=back, q=quit, m=more info): ")
             if user_response.isdigit():
                 instruction = self.instructions.byIndex(int(user_response))
                 user_response = 'n'
@@ -118,6 +118,8 @@ class webnavigator():
                 self.instructions.print()
             elif user_response.lower() == 'c':
                 return self.executeAll()
+            elif user_response.lower() == 'm':
+                self.printStepOptions()
             elif user_response.lower() == 'q':
                 return
 
@@ -155,6 +157,29 @@ class webnavigator():
         Side effect - None
         '''
         return self.dataList
+
+    def printStepOptions(self):
+        print('''
+        Below are all the available options for step-by-step mode.
+        Input can be entered as either upper or lower case.
+        Entering a number will execute that indexed instruction.
+        
+        N: next instruction
+        B: back one instruction (but does not execute);
+           also steps back in the URL stack. Note that going
+           forward and backwards can result in a disconnect between the
+           instructions and URLs. Using an instruction index execute the 
+           appropriate instruction for the current URL.
+        P: print all instructions; current instruction (will be executed on
+           'N' input) is denoted with '***'
+        Q: Quit execution
+        I: insert a custom instruction; this inserts a custom user instruction
+           after the current instruction. Currently this only affects instructions
+           as held in memory.
+        C: continue until an exception occurs or all instructions complete
+        M: List all options
+        [0-9]+: Execute instruction at numbered index
+        ''')
 
     def flush(self):
         self.dataList.clear()
