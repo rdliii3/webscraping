@@ -42,15 +42,20 @@ class website:
                     self.__username = str(base64.b64decode(data[self.url][0]),'ascii')
                     self.__password = str(base64.b64decode(data[self.url][1]),'ascii')
                 else:
-                    self.__username=self.ask_username()
-                    self.__password=getpass("Enter the password associated with the username:")
+                    self.prompt()
         else:
-            self.__username=self.ask_username()
-            self.__password=getpass("Enter the password associated with the username:")
+            self.prompt()
 
     def ask_username(self):
-        return input("Enter the username associated with the website:")
+        self.__username=input("Enter the username associated with the website:")
 
+    def ask_password(self):
+        self.__password=getpass("Enter the password associated with the username:")
+
+    def prompt(self):
+        self.ask_username()
+        self.ask_password()
+        
     def username(self):
         return self.__username
 

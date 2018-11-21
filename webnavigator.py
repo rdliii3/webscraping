@@ -74,6 +74,8 @@ class webnavigator():
                     element.send_keys(self.website.username())
                 elif string=='password':
                     element.send_keys(self.website.password())
+                elif string=='prompt':
+                    self.website.prompt()
                 else:
                     element.send_keys(string)
             elif action=='parse':
