@@ -53,6 +53,8 @@ class webnavigator():
                 self.config_params[ line.split('=')[0].strip() ]= line.split('=')[1].strip()
 
 
+
+
     def execute(self,instruction):
         '''This function takes an instruction and executes it
         Input - An instruction (list of 4 items)
@@ -61,10 +63,10 @@ class webnavigator():
         if self.log:
             print('Executing: ' + ' '.join(instruction))
         
+        attempts = 0
+        element_id,element_type,action,string = instruction
+
         try:
-
-            element_id,element_type,action,string = instruction
-
             #get element
             if element_type=='id':
                 element = self.driver.find_element_by_id(element_id)
@@ -72,6 +74,7 @@ class webnavigator():
                 element = self.driver.find_element_by_name(element_id)
             elif element_type=='xpath':
                 element = self.driver.find_element_by_xpath(element_id)
+
             #perform action
             if action=='click':
                 element.click()
@@ -101,9 +104,15 @@ class webnavigator():
             elif action=='pause':
                 sleep(int(string))
             return True
+
         except Exception as e:
-            self.instructionError(e)
-            return False
+            # Try to execute instruction 3 times before failing
+            if attempts < 3:
+                attempts += 1
+                return self.execute(instruction)
+            else:
+                self.instructionError(e)
+                return False
             
     def executeByStep(self):
         '''Function to control execution by step from the user'''
