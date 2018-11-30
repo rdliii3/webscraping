@@ -6,7 +6,8 @@ class webparser():
         self.document=BeautifulSoup(html,'lxml')
         self.parse_type=parse_type
         self.functions={'print':self.printHtml,
-                        'table':self.parseTable}
+                        'table':self.parseTable,
+                        'tableTree':self.parseTableTree}        
         self.setup()
 
     def setup(self):
@@ -28,7 +29,21 @@ class webparser():
                     csv_row.append(string)
             data.append(csv_row)
         return data
-        
+
+    def parseTableTree(self):
+        data=[]
+        self.document.prettify()
+        tables=self.document.find_all('table')
+        i = 0
+        for table in tables:
+            i += 1
+            tableParser=webparser(str(table),'table')
+            one_table_data = tableParser.parse()
+            # add identifying info to table data
+            for line in one_table_data:
+                line.insert(0, str(i))
+            data += one_table_data
+        return data
     
 
 if __name__=='__main__':
