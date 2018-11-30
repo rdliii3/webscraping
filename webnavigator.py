@@ -1,10 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
 from website import website
 from webparser import webparser
 from navinput import navinput
 from output import Output
-import os,sys
+import os, sys
+from time import sleep
 
 
 class webnavigator():
@@ -73,6 +75,14 @@ class webnavigator():
             #perform action
             if action=='click':
                 element.click()
+            elif action=='select':
+                if string.isdigit():
+                    Select(element).select_by_index(string)
+                else:
+                    try:
+                        Select(element).select_by_visible_text(string)
+                    except:
+                        Select(element).select_by_value(string)
             elif action=='send_keys':
                 if string=='username':
                     element.send_keys(self.website.username())
@@ -88,6 +98,8 @@ class webnavigator():
                 self.write(string)
             elif action=='flush':
                 self.flush()
+            elif action=='pause':
+                sleep(int(string))
             return True
         except Exception as e:
             self.instructionError(e)

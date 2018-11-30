@@ -79,11 +79,11 @@ class navinput():
             l.append("")
             return l
         if len(l) == 2:
-            if l[0].lower() == 'output':
+            if l[0].lower() in ["output", "pause"]:
                 return ["","",l[0].lower(),l[1]]
         if len(l) == 1:
-            # Output & flush only acceptable optoins
-            if l[0].lower() == 'output' or l[0].lower() == 'flush':
+            # Output,flush,pause only acceptable optoins
+            if l[0].lower() in ["output", "flush"]:
                 return ["","",l[0].lower(),""]
         if len(l) > 4:
             return 'Error: Too many fields on line'
