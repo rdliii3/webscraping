@@ -30,6 +30,7 @@ class webnavigator():
         self.url_stack=[] # created for step back ability
         # Set object attributes
         self.log=log
+        self.attempts = 0
 
     def __enter__(self):
         return self
@@ -63,7 +64,7 @@ class webnavigator():
         if self.log:
             print('Executing: ' + ' '.join(instruction))
         
-        attempts = 0
+
         element_id,element_type,action,string = instruction
 
         try:
@@ -103,12 +104,14 @@ class webnavigator():
                 self.flush()
             elif action=='pause':
                 sleep(int(string))
+            self.attempts = 0
             return True
 
         except Exception as e:
             # Try to execute instruction 3 times before failing
-            if attempts < 3:
-                attempts += 1
+            if self.attempts < 3:
+                self.attempts += 1
+                sleep(self.attempts)
                 return self.execute(instruction)
             else:
                 self.instructionError(e)
@@ -253,6 +256,8 @@ if __name__=='__main__':
     if len(sys.argv) > 2:
         outputType = sys.argv[2].split('.')[1]
         OutputObj = Output(sys.argv[2], outputType)
+    else:
+        OutputObj = Output()
 
     # Run
     with webnavigator(instructionFile, log) as navigator:
