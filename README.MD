@@ -1,7 +1,5 @@
 Required dependencies
 
-TODO RDL - create into a script
-
 python3 - sudo yum install python3
 bs4 (BeautifulSoup) - sudo pip3 install bs4
 selenium - sudo pip3 install selenium
